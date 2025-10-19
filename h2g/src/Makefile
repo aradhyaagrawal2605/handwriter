@@ -1,0 +1,17 @@
+.PHONY: clean
+
+CFLAGS = -Wall -Wextra -O0 -ggdb -I/opt/homebrew/opt/argp-standalone/include
+
+run: hf2gcode demo.txt demo_Umlaute.txt
+	./hf2gcode -i demo.txt -o demo_hello_world.ngc -y 23
+	./hf2gcode -m -s 0.3 -p 2 -f 800 -i demo.txt -o demo_hello_world_needler.ngc -y 23
+	./hf2gcode -i demo.txt --font=scripts -o demo_hello_world_scripts.ngc -y 23
+	./hf2gcode -i demo_Umlaute.txt -o demo_Umlaute.ngc -y 40
+
+hf2gcode: hf2gcode.c libhf2gcode.c
+	$(MAKE) -C ../hershey_fonts src
+	gcc $(CFLAGS) $^ -o $@ -L/opt/homebrew/opt/argp-standalone/lib -largp
+
+clean:
+	rm -f hf2gcode
+	rm -f *.ngc
